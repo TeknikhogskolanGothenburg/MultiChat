@@ -39,6 +39,14 @@ def broadcast_thread():
 def client_thread(client_socket):
     client_socket.sendall(b'What name would you like to use? ')
     username = client_socket.recv(1024).decode('utf-8')
+
+    data_dict = {
+        'client_socket': client_socket,
+        'username': username,
+        'message': 'Has joined the chat'
+    }
+
+    message_queue.put(data_dict)
     while True:
         try:
             message = client_socket.recv(1024).decode('utf-8')
