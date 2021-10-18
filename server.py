@@ -20,7 +20,18 @@ def broadcast_thread():
             if client != sender_socket:
                 message_to_send = f'{username}: {message}'
                 message_bytes = message_to_send.encode('utf-8')
-                client.sendall(message_bytes)
+                try:
+                    client.sendall(message_bytes)
+                except BrokenPipeError:
+                    client_list.remove(client)
+
+                    data_dict = {
+                        'client_socket': client,
+                        'username': "A user",
+                        'message': 'Has left the chat'
+                    }
+
+                    message_queue.put(data_dict)
 
         message_queue.task_done()
 
@@ -29,7 +40,10 @@ def client_thread(client_socket):
     client_socket.sendall(b'What name would you like to use? ')
     username = client_socket.recv(1024).decode('utf-8')
     while True:
-        message = client_socket.recv(1024).decode('utf-8')
+        try:
+            message = client_socket.recv(1024).decode('utf-8')
+        except (ConnectionResetError, ConnectionAbortedError):
+            message = "!quit"
         if message.lower() == '!quit':
             client_list.remove(client_socket)
 
