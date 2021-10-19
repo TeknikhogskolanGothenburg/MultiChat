@@ -6,7 +6,7 @@ import random
 import html
 import requests
 
-HOST = '127.0.0.1'
+HOST = ''
 PORT = 30125
 
 message_queue = queue.Queue()
