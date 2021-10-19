@@ -1,7 +1,8 @@
 import socket
 import threading
 
-HOST = '159.223.18.177'
+# HOST = '159.223.18.177'
+HOST = '127.0.0.1'
 PORT = 30125
 
 running = True
@@ -26,6 +27,12 @@ def receiver(client_socket):
 def main():
     client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     client_socket.connect((HOST, PORT))
+
+    welcome_message = client_socket.recv(1024).decode('utf-8')
+    print(welcome_message)
+
+    quote = client_socket.recv(1024).decode('utf-8')
+    print(quote)
 
     name_question = client_socket.recv(1024).decode('utf-8')
     name = input(name_question)

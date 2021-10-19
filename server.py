@@ -1,12 +1,24 @@
 import socket
 import threading
 import queue
+import json
+import random
+import html
+import requests
 
-HOST = ''
+HOST = '127.0.0.1'
 PORT = 30125
 
 message_queue = queue.Queue()
 client_list = []
+
+
+def get_quoate():
+    url = 'https://quotesondesign.com/wp-json/wp/v2/posts/?orderby=rand'
+    response = json.loads(requests.get(url).text)
+    response = random.choice(response)
+    quote = html.unescape(response['content']['rendered'])
+    return quote[3:-5]
 
 
 def broadcast_thread():
@@ -84,6 +96,9 @@ def main():
     while running:
         # Blocking call
         client_socket, client_address = server_socket.accept()
+        client_socket.sendall('Welcome to the chat server'.encode('utf-8'))
+        client_socket.sendall(f'Quote of the day:\n{get_quoate()}'.encode('utf-8'))
+
         print(f'Got a connection from {client_address}')
 
         client_list.append(client_socket)
